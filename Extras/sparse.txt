@@ -1,0 +1,105 @@
+	// int erase_index = 0;
+	// int row_erase_index = 0;
+	// int old_row = 0;
+	// int row_elem = 0;
+	// int final_row_count = 0;
+	// for (int i = 0 ; i < H->row ; i++)
+	// {
+	// 	int f =  old_row;
+	// 	int l = H->rowPtr[i+1];
+	// 	row_elem = l - f;
+	// 	for (int j = f; j < l; j++)
+	// 		if(fabs(H->values[j]) < 1e-7){
+	// 			H->colPtr.erase(H->colPtr.begin() + erase_index + j );
+	// 			H->values.erase(H->values.begin() + erase_index + j );
+	// 			erase_index ++;
+	// 			row_erase_index ++;
+	// 		}
+	// 	old_row = H->rowPtr[i];
+	// 	H->rowPtr[i] -= row_erase_index;
+	// 	row_erase_index = 0;
+	// }
+	
+	
+	
+	
+		// for ( int i = 0 ; i < H->rowPtr.size(); i++)
+    //     std::cout<< H->rowPtr[i] << "    " ;
+    // std::cout<<std::endl;
+
+    // for ( int i = 0 ; i < H->NNZSize ; i++)
+    //     std::cout<< H->colPtr[i] << "    " ;
+    // std::cout<<std::endl;
+
+    // for ( int i = 0 ; i < H->NNZSize ; i++)
+    //     std::cout<< H->values[i] << "    " ;
+    
+    
+    ??? DIRECY SOLCER ------------------------------------------------------
+    
+       // Sparse_Matrix* matrix = new Sparse_Matrix;
+    // matrix->row = 5;
+    // matrix->col = 5;
+    // matrix->NNZSize = 10;
+    // matrix->rowPtr.resize(6);
+    // matrix->colPtr.resize(10);
+    // matrix->values.resize(10);
+    // matrix->rowPtr[0] = 0;matrix->rowPtr[1] = 2;matrix->rowPtr[2] = 5;matrix->rowPtr[3] = 8;matrix->rowPtr[4] = 10;matrix->rowPtr[5] = 10;
+    // matrix->colPtr[0] = 0;matrix->colPtr[1] = 1;matrix->colPtr[2] = 0;matrix->colPtr[3] = 1;matrix->colPtr[4] = 2;matrix->colPtr[5] = 1;
+    // matrix->colPtr[6] = 2;matrix->colPtr[7] = 3;matrix->colPtr[8] = 2;matrix->colPtr[9] = 3;
+    // matrix->values[0] = 7.58824;matrix->values[1] =4.21564 ;matrix->values[2] = 4.21564;matrix->values[3] = 7.69214;matrix->values[4] = 4.05368;matrix->values[5] = 4.05368;
+    // matrix->values[6] = 8.08878;matrix->values[7] = 1.37;matrix->values[8] = 1.37;matrix->values[9] = 1.63084;
+
+    for ( int i = 0 ; i < row+1; i++)
+        std::cout<< matrix->rowPtr[i] << "    " ;
+    std::cout<<std::endl;
+
+    for ( int i = 0 ; i < matrix->NNZSize ; i++)
+        std::cout<< matrix->colPtr[i] << "    " ;
+    std::cout<<std::endl;
+
+    for ( int i = 0 ; i < matrix->NNZSize ; i++)
+        std::cout<< matrix->values[i] << "    " ;
+    
+    std::cout<<std::endl;
+
+     for( int i =0 ; i<row;i++)
+	{
+		for(int j = 0 ; j <col; j++)
+			std::cout<<matrix->getValues(i,j)<<"\t\t";
+		std::cout<<std::endl;
+	}
+
+    for ( int i = 0 ; i < matrix->row ; i++)
+        std::cout<< FGlobal[i] << "    " ;
+        
+??? DIRECY SOLCER ------------------------------------------------------
+
+
+
+======================== DISPLAY MATRIX AND VECTOR ===================================================
+	for( int i =0 ; i<matrix.row;i++)
+	{
+		for(int j = 0 ; j <matrix.row; j++)
+			std::cout<<matrix.getValues(i,j)<<"\t\t";
+		std::cout<<std::endl;
+	}
+
+	for( int i =0 ; i<matrix.row;i++)
+	{
+		std::cout<<b[i]<<"\t\t";
+	}
+		std::cout<<std::endl
+==================================================================================
+
+
+====================== DISPLAYING H MATRIX =======================================
+		std::cout << " Displaying H matrix : "<<std::endl;
+		for( int i =0 ; i<restartFOMFactor+1;i++)
+		{
+			for(int j = 0 ; j <restartFOMFactor; j++)
+				std::cout<<H->getValues(i,j)<<"\t\t";
+			std::cout<<std::endl;
+		}
+
+===============================================================
