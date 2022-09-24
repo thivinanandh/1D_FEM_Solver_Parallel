@@ -42,6 +42,10 @@ at the boundary nodes. Further, It also has parameter to apply Boundary
 condition without the loss of symmetricity so that it could solved
 easily using Iterative Solvers like Conjugate Gradient method
 
+### Sparse Matrix Storage
+
+Support storage and retrival of the matrices in Compressed sparse row format for storage efficiency.
+
 ### Solver 
 
 Direct Solver (UMFPACK - Sparse Matrix Solver Routines ) , and Iterative
