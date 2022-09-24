@@ -188,6 +188,3 @@ No of Cells : 100
 VTK File sol.vtk has been generated
 ```
 
-
-### GNU Plot Visualisation
-
