@@ -39,6 +39,14 @@ class InputData
     static int NUM_THREADS;
     static int RESTART_PARAMETER_FOM;
     static int MAX_ITERATION_FOM;
+
+    static double CONVECTION_COEFF;
+    static double ADVECTION_COEFF;
+    static double SOURCE_COEFF;
+    static double FORCE_VAL;
+
+    
+
   
     
     

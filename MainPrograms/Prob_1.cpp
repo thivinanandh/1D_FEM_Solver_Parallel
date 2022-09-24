@@ -45,16 +45,15 @@ int main(int argc , char** argv)
     FE.setup_FEsystem();
 
     FE.Assemble1D(InputData::ASSEMBLY_TYPE);
-
-    // Apply Boundary Condition
-    FE.apply_boundary_condition(DIRICHLET,0,DIRICHLET,1,InputData::SYMM_BOUND_COND);
+    
+    FE.apply_boundary_condition(DIRICHLET,InputData::BOUND_VAL1,DIRICHLET,InputData::BOUND_VAL2,InputData::SYMM_BOUND_COND);
     
   
  #ifdef DEBUG
     for( int i =0 ; i<FE.N_DOF;i++)
     {
         for(int j = 0 ; j <FE.N_DOF; j++)
-            std::cout<<matrix->getValues(i,j)<<"\t";
+            std::cout<<matrix->getValues(i,j)<<",";
         std::cout<<std::endl;
     }
     for( int i=0; i<FE.N_DOF; i++)
@@ -68,9 +67,9 @@ int main(int argc , char** argv)
     else
         Solver_Iterative(InputData::SOLVER_TYPE, matrix, &(FE.FGlobal[0]), &(FE.Solution[0]), InputData::TOLERANCE,InputData::MAX_ITER);
 
-    
+
     // Write Solution into a VTK File
-    //FE.Write_VTK("sol");
+    FE.Write_VTK("sol");
 
 
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_C_COMPILER "/opt/intel/compilers_and_libraries/linux/bin/intel64/icc")
-set(CMAKE_CXX_COMPILER "/opt/intel/compilers_and_libraries/linux/bin/intel64/icpc")
+set(CMAKE_C_COMPILER "icc")
+set(CMAKE_CXX_COMPILER "icpc")
 project(FE_1D)
 
 

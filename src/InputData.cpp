@@ -9,6 +9,8 @@ int InputData::MAX_ITER= 10000;
 double InputData::TOLERANCE= 1e-6;
 double InputData::BOUND_VAL1= 0;
 double InputData::BOUND_VAL2= 1;
+bool InputData::BOUND_COND1= 0;
+bool InputData::BOUND_COND2= 0;
 double InputData::RELAXATION_JACOBI= 1.98;
 double InputData::RELAXATION_SOR= 1.98;
 bool InputData::SYMM_BOUND_COND = 0;
@@ -21,6 +23,11 @@ int InputData::RESIDUAL_DISPLAY;
 int InputData::NUM_THREADS;
 int InputData::RESTART_PARAMETER_FOM;
 int InputData::MAX_ITERATION_FOM;
+double InputData::CONVECTION_COEFF;
+double InputData::ADVECTION_COEFF;
+double InputData::SOURCE_COEFF;
+double InputData::FORCE_VAL;
+
 
 
 void InputData::get_input_values(std::string filename)
@@ -69,11 +76,11 @@ void InputData::get_input_values(std::string filename)
             }
             else if(temp == "BOUND_COND1:"){
                 file >> temp1;
-                BOUND_VAL2 = stoi(temp1);
+                BOUND_COND1 = stoi(temp1);
             }
             else if(temp == "BOUND_COND2:"){
                 file >> temp1;
-                BOUND_VAL2 = stoi(temp1);
+                BOUND_COND2 = stoi(temp1);
             }
             else if(temp == "RELAXATION_JACOBI:"){
                 file >> temp1;
@@ -132,6 +139,28 @@ void InputData::get_input_values(std::string filename)
                 file >> temp1;
                 MAX_ITERATION_FOM = stoi(temp1);
             }
+
+            else if(temp == "CONVECTION_COEFF:"){
+                file >> temp1;
+                CONVECTION_COEFF = stod(temp1);
+            }
+
+
+            else if(temp == "ADVECTION_COEFF:"){
+                file >> temp1;
+                ADVECTION_COEFF = stod(temp1);
+            }
+
+            else if(temp == "SOURCE_COEFF:"){
+                file >> temp1;
+                SOURCE_COEFF = stod(temp1);
+            }
+
+            else if(temp == "FORCE_VAL:"){
+                file >> temp1;
+                FORCE_VAL = stod(temp1);
+            }
+
 
             else
             {

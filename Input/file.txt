@@ -11,20 +11,30 @@ SOLVER_TYPE: 2
 -----------ASSEMBLY_TYPE---------------------------
 -------1 - Normal Assemble || 2 - Smart_Assemble
 ---------------------------------------------------
-ASSEMBLY_TYPE: 2
+ASSEMBLY_TYPE: 1
 ---------------------------------------------------
 
 ------------FINITE_ELEMENT_PARAMETERS--------------
 ---------------------------------------------------
 N_CELLS: 100
-FE_ORDER: 2
+FE_ORDER: 1
 ---------------------------------------------------
 
 ---------------BOUNDARY_VALUES-----------------
 --------------------------------------------------
 BOUND_VAL1: 0
-BOUND_VAL2: 1
+BOUND_VAL2: 0
+
+---------------BILINEAR_TERMS-----------------
 --------------------------------------------------
+CONVECTION_COEFF: 10.0
+ADVECTION_COEFF: 1.0
+SOURCE_COEFF: 0
+
+---------------FORCING TERM(RHS)-----------------
+--------------------------------------------------
+FORCE_VAL: 1.0
+
 
 ---------------PARALLEL_SECTION-----------------
 --------------------------------------------------  
@@ -43,17 +53,17 @@ BOUND_COND2: 0
 ----- 0 - unsymmetric Diriclet Bound Val ---------
 ----- 1 - symmetric Diriclet Bound Val ----------
 -------------------------------------------------
-SYMM_BOUND_COND: 1
+SYMM_BOUND_COND: 0
 --------------------------------------------------
 
 -------------SOLVER_PARAMETERS--------------------
 //-use FOM parameters for GMRES also
 --------------------------------------------------
-MAX_ITER: 500
+MAX_ITER: 50000
 RESIDUAL_DISPLAY: 100
-TOLERANCE: 1e-5
-RELAXATION_JACOBI: 0.66
-RELAXATION_SOR: 0.66
+TOLERANCE: 1e-5	
+RELAXATION_JACOBI: 0.5
+RELAXATION_SOR: 1
 CG_PRECONDITIONER: 0
 RESTART_PARAMETER_FOM: 2
 MAX_ITERATION_FOM: 500
@@ -73,6 +83,6 @@ BFILE:   /home/thivin/Git/Subjects/Parallel_FEM/Sequential/FE_1D/Extras/matrix_p
 VTKNAME: OUTPUT
 
 PRINT_RESIDUAL: 1
-PLOT_GNU: 0
+PLOT_GNU: 1
 
 ----------------------------------------------------

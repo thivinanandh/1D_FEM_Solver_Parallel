@@ -204,7 +204,7 @@ void FE_1D::Initialise_sol_rhs()
 
 void FE_1D::apply_boundary_condition_normal(int a,double Boundval1 , int b, double Boundval2)
 {
-    if(a + b > 1)
+     if(a + b > 1)
     {
         std::cout<< "Cannot provide boundary condition as Neumann on both the edges for a stationary problem " << std::endl;
         exit(0);
@@ -250,8 +250,10 @@ void FE_1D::Smart_Assemble()
     std::vector<std::vector<double>> klocal(N_Nodes_Element, std::vector<double>(N_Nodes_Element,0));
 
     // Initialise Global F Vector and the Global Solution Vector
-    FGlobal.resize(N_DOF,0);
-    Solution.resize(N_DOF,0);
+    
+    std::fill(FGlobal.begin(), FGlobal.end(), 0);
+    
+    std::fill(Solution.begin(), Solution.end(), 0);
     double val = 0;
 
     auto start = clock();
@@ -293,124 +295,53 @@ void FE_1D::Smart_Assemble()
     
 }
 
-void FE_1D::Write_VTK(std::string filename)
-{
-    filename.append(".vtk") ;
-    std::ofstream myfile(filename);
 
-    myfile.flags( std::ios::dec | std::ios::scientific);
-    myfile.precision(6);
- 
-    // LIne 1 - VTK Version
-    myfile << "# vtk DataFile Version 1.0"<<std::endl;
-
-    //Line 2 - Title
-    myfile <<" Solution 1D " << std::endl<<std::endl;
-
-    //Line 3 - Data type ( ASCII / BINARY )
-    myfile <<"ASCII" << std::endl;
-
-    //Line 3 - Structured or unstructured grid ( STRUCTURED_GRID / UNSTRUCTURED_GRID )
-    myfile <<"DATASET UNSTRUCTURED_GRID" << std::endl;
-
-    //Line 4 - no of data points :: syntax -> POINTS <no of points> <datatype>
-    myfile <<"POINTS " <<N_DOF<<" float" <<std::endl;
-
-    for( int i = 0; i < N_DOF; i++)
-        myfile <<i*(h)<<" "<<"0.0000000 "<<"0.000000"<<std::endl;
-    
-    myfile<<std::endl;
-
-    // CELLS -> syntax : CELLS <no of cells> <no of parameters  totally needed to define the total cell points>
-    // for eg: in 1D total points in cells is 2 , So the last parameter will be (2+1)* No of cells
-
-    myfile<<"CELLS "  <<N_Cells<< " " << (N_Nodes_Element+1)*N_Cells<<std::endl;
-
-    int node = 0;
-    for( int i = 0; i < N_Cells; i++)
-        myfile <<"2 "<<node<<" " <<++node<<std::endl;
-
-    myfile<<std::endl;
-
-    // CELL TYPES : syntax: CELL_TYPES <No of cells>
-    // cell type for all the cells, 
-    // for 1d Element - cell type is 3
-
-    myfile<<"CELL_TYPES "  <<N_Cells<<std::endl;
-
-    for(int i = 0 ; i<N_Cells;i++)
-        myfile<<"3 ";
-    
-    myfile<<std::endl<<std::endl<<std::endl;
-
-
-    // POINT DATA : syntax - PONT_DATA <no of points>
-    // < scalar or vector> < Datatype>
-    //"LOOKUPTABLE" < lookuptable type >
-
-    myfile<<"POINT_DATA "<<N_DOF<<std::endl;
-    myfile<<"SCALARS "<<"1D_Solution "<<"float"<<std::endl;
-    myfile<<"LOOKUP_TABLE "<<"default" <<std::endl;
-
-    for( int i =0 ; i < N_DOF ; i++)
-        myfile<<Solution[i]<<std::endl;
-
-    myfile.close();
-
-    std::cout<<"VTK File "<< filename << " has been generated"<<std::endl;
-}
 
 void FE_1D::assemble()
 {   
-    mkl_set_num_threads(InputData::NUM_THREADS);
+     mkl_set_num_threads(InputData::NUM_THREADS);
 	mkl_set_dynamic(false);
       auto start = clock(); 
     // Declare a 2D Array - for Local Stiffness
     std::vector<double> flocal(N_Nodes_Element);
 
     // Initialise Global F Vector and the Global Solution Vector
-    FGlobal.resize(N_DOF,0);
-    Solution.resize(N_DOF,0);
+     std::fill(FGlobal.begin(), FGlobal.end(), 0);
+    
+    std::fill(Solution.begin(), Solution.end(), 0);
     double val = 0;
+    double fval = 0;
     int global_i;
     int global_j;
 
     
     // Loop Over cells
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(int cell = 0; cell<N_Cells;cell++)
     {   
         int cell_index = cell*N_Nodes_Element;
         // Loop over all Nodal Points - i // for test
-        for ( int i = 0 ; i < N_Nodes_Element ; i++)
-        {   
-            flocal[i] = 0;
-            global_i = local2Global[cell_index + i];
 
-            FGlobal[global_i] += flocal[i];
-            // Loop over all Nodal points // for ansatz
-            for(int j=0 ; j < N_Nodes_Element; j++)
-            {   
-                global_j = local2Global[cell_index + j];
-                // Loop over quadrature 
-                for(int q = 0 ; q < quadRule ; q++){
-                        // val += basisFunctionGradients(i,quadPoints[q])*basisFunctionGradients(j,quadPoints[q])*detJ[q];// Fill the Values here;   
-                        val += Nx[i*quadRule + q]*Nx[j*quadRule + q]*detJ[q];// Fill the Values here;   
+        for(int q = 0 ; q < quadRule ; q++)
+        {
+            for ( int i = 0 ; i < N_Nodes_Element ; i++)
+            {
+                global_i = local2Global[cell_index + i];
+                
+                FGlobal[global_i] += InputData::FORCE_VAL * N[i*quadRule + q]*detJ[q];
+                // FGlobal[global_i] = 1;
+                for(int j=0 ; j < N_Nodes_Element; j++)
+                {   
+                    global_j = local2Global[cell_index + j];
+                    matrix->getValues(global_i,global_j) += ( (InputData::CONVECTION_COEFF* Nx[i*quadRule + q]*Nx[j*quadRule + q] ) + (InputData::ADVECTION_COEFF * Nx[j*quadRule + q] * N[i*quadRule * q] ) ) * detJ[q];
                 }
-                matrix->getValues(global_i,global_j) += val;
-                val =0;
             }
-            flocal[i] = 0;
         }
-    }
 
-    std::cout<<std::endl;
-    // for( int i =0 ; i<N_DOF;i++)
-    // {
-    //     for(int j = 0 ; j <N_DOF; j++)
-    //         std::cout<<matrix->getValues(i,j)<<"\t";
-    //     std::cout<<std::endl;
-    // }
+
+        
+    }
+ 
     auto stop = clock(); 
     auto duration = (stop -start)/double(CLOCKS_PER_SEC)*1000; 
     std::cout << " Time Taken for assembly : " << duration <<" ms" << std::endl;
@@ -423,7 +354,7 @@ void FE_1D::assemble()
 // 1 - Neumann
 void FE_1D::apply_boundary_condition_symmetric(int a , double Boundval1,int b , double Boundval2)
 {
-     if(a + b > 1)
+      if(a + b > 1)
     {
         std::cout<< "Cannot provide boundary condition as Neumann on both the edges for a stationary problem " << std::endl;
         exit(0);
@@ -499,4 +430,73 @@ void FE_1D::Plot_GNU()
     file.close();
 
     system("gnuplot -e \"plot 'GNUPLOT_FILE.dat' using 1:2 with linespoints; pause -1 ; exit\" ");
+}
+
+
+
+void FE_1D::Write_VTK(std::string filename)
+{
+    filename.append(".vtk") ;
+    std::ofstream myfile(filename);
+
+    myfile.flags( std::ios::dec | std::ios::scientific);
+    myfile.precision(6);
+ 
+    // LIne 1 - VTK Version
+    myfile << "# vtk DataFile Version 1.0"<<std::endl;
+
+    //Line 2 - Title
+    myfile <<" Solution 1D " << std::endl<<std::endl;
+
+    //Line 3 - Data type ( ASCII / BINARY )
+    myfile <<"ASCII" << std::endl;
+
+    //Line 3 - Structured or unstructured grid ( STRUCTURED_GRID / UNSTRUCTURED_GRID )
+    myfile <<"DATASET UNSTRUCTURED_GRID" << std::endl;
+
+    //Line 4 - no of data points :: syntax -> POINTS <no of points> <datatype>
+    myfile <<"POINTS " <<N_DOF<<" float" <<std::endl;
+
+    for( int i = 0; i < N_DOF; i++)
+        myfile <<i*(h)<<" "<<"0.0000000 "<<"0.000000"<<std::endl;
+    
+    myfile<<std::endl;
+
+    // CELLS -> syntax : CELLS <no of cells> <no of parameters  totally needed to define the total cell points>
+    // for eg: in 1D total points in cells is 2 , So the last parameter will be (2+1)* No of cells
+
+    myfile<<"CELLS "  <<N_Cells<< " " << (N_Nodes_Element+1)*N_Cells<<std::endl;
+
+    int node = 0;
+    for( int i = 0; i < N_Cells; i++)
+        myfile <<"2 "<<node<<" " <<++node<<std::endl;
+
+    myfile<<std::endl;
+
+    // CELL TYPES : syntax: CELL_TYPES <No of cells>
+    // cell type for all the cells, 
+    // for 1d Element - cell type is 3
+
+    myfile<<"CELL_TYPES "  <<N_Cells<<std::endl;
+
+    for(int i = 0 ; i<N_Cells;i++)
+        myfile<<"3 ";
+    
+    myfile<<std::endl<<std::endl<<std::endl;
+
+
+    // POINT DATA : syntax - PONT_DATA <no of points>
+    // < scalar or vector> < Datatype>
+    //"LOOKUPTABLE" < lookuptable type >
+
+    myfile<<"POINT_DATA "<<N_DOF<<std::endl;
+    myfile<<"SCALARS "<<"1D_Solution "<<"float"<<std::endl;
+    myfile<<"LOOKUP_TABLE "<<"default" <<std::endl;
+
+    for( int i =0 ; i < N_DOF ; i++)
+        myfile<<Solution[i]<<std::endl;
+
+    myfile.close();
+
+    std::cout<<"VTK File "<< filename << " has been generated"<<std::endl;
 }
